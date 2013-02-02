@@ -7,6 +7,7 @@ public class Utilities {
 	public static final double ERROR_MARGIN = Math.PI/5;
 	public static final int JUMP_POINTS = 20;
 	public static final int IGNORE_ENDPOINTS = 3;
+	public static final double MAX_DIST = 30;
 	
 	public static double getDirection(Point point1, Point point2) {
 		if(point1.x == point2.x) {
@@ -59,6 +60,40 @@ public class Utilities {
 		}
 		
 		return true;
+	}
+	public static Vector<Point> getDirSeq(Vector<Point> points) {
+		int beginning = 0;
+		int i=beginning;
+		return points;
+		
+		
+	}
+	
+	public static double rateDirSeq(Vector<Point> dirSeq1, Vector<Point> dirSeq2) {
+		double result = 0;
+		double l1 = length(dirSeq1);
+		double l2 = length(dirSeq2);
+		double dl1=0;
+		for(Point p1 : dirSeq1) {
+			double dl2=0;
+			for(Point p2 : dirSeq2) {
+				result += Math.abs(dot(p1,p2))*(1-Math.abs(dl1/l1-dl2/l2))*(1-Math.abs((dl1+length(p1)/l1+dl2+length(p2))));
+			}
+		}
+		return result;
+	}
+	private static double dot(Point p1, Point p2) {
+		return p1.x*p2.x+p1.y*p2.y;
+	}
+	private static double length(Vector<Point> dirSeq) {
+		double sum = 0;
+		for(Point p : dirSeq)
+			sum+=length(p);
+		return sum;
+	}
+	private static double length(Point p) {
+		
+		return Math.sqrt(p.x*p.x+p.y*p.y);
 	}
 	public static double getDirection(Vector<Point> vect, int index, int increment) {
 		return(getDirection(vect.get(index),vect.get(index+increment)));
