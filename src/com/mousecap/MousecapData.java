@@ -5,11 +5,13 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.util.Vector;
+import java.util.Collection;
+import java.util.Map;
+import java.util.TreeMap;
 
 public class MousecapData {
-	private Vector<Gesture> gestures;
-	private int size;
+	private Map<Integer,Gesture> gestures;
+	private int curId;
 	private static MousecapData instance;
 	
 	static {
@@ -21,33 +23,44 @@ public class MousecapData {
          instance = (MousecapData) in.readObject();
          in.close();
          fileIn.close();
-      }catch(IOException i)
+      }catch(Exception i)
       {
-         i.printStackTrace();
-      }catch(ClassNotFoundException c)
-      {
-         c.printStackTrace();
+         //i.printStackTrace();
       }
       if(instance == null)
     	  instance = new MousecapData();
 	}
-	private MousecapData() {}
-	
-	public Vector<Gesture> getGestures() {
-		return gestures;
+	private MousecapData() {
+		curId = 0;
+		gestures = new TreeMap<Integer,Gesture>();
 	}
 	
-	public void addGesture(Gesture gesture) {
-		gestures.set(size, gesture);
-		size++;
+	public Collection<Gesture> getGestures() {
+		return gestures.values();
 	}
 	
-	public void removeGesture(int index) {
-		gestures.set(index, null);	
+	public void add(Gesture gesture) {
+		if(gesture.getId() == null) {
+			gesture.setId(curId);
+			gestures.put(curId, gesture);
+			curId++;
+		}
+		else {
+			gestures.put(gesture.getId(), gesture);
+		}
 	}
 	
-	public void changeGesture(int index, Gesture gesture) {
-		gestures.set(index, gesture);
+	public void remove(Gesture gesture) {
+		gestures.remove(gesture.getId());
+	}
+	
+	public void set(int id, Gesture gesture) {
+		gesture.setId(id);
+		gestures.put(id, gesture);
+	}
+	
+	public Gesture find(int id) {
+		return gestures.get(id);
 	}
 	
 	public void saveGestures() {
@@ -68,9 +81,5 @@ public class MousecapData {
 	
 	public static MousecapData getInstance() {
 		return instance;
-	}
-
-	public int getSize() {
-		return size;
 	}
 }

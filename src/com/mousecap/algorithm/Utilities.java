@@ -9,6 +9,10 @@ public class Utilities {
 	public static final int IGNORE_ENDPOINTS = 3;
 	
 	public static double getDirection(Point point1, Point point2) {
+		if(point1.x == point2.x) {
+			if(point2.y>point1.y) return Math.PI/2;
+			return -Math.PI/2;
+		}
 		double atan = Math.atan(((double) point2.y-point1.y)/(point2.x-point1.x));
 		if(point2.x<point1.x) return Math.PI+atan;
 		return atan;
@@ -46,6 +50,7 @@ public class Utilities {
 		}
 		if(i+JUMP_POINTS+IGNORE_ENDPOINTS<vect1.size() || j+JUMP_POINTS+IGNORE_ENDPOINTS<vect2.size()) {
 			System.out.println("A signature finished before the other one");
+			return false;
 		}
 		
 		return true;

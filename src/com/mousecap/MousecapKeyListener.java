@@ -1,6 +1,7 @@
 package com.mousecap;
 
 import java.awt.Point;
+import java.util.Collection;
 import java.util.Vector;
 
 import org.jnativehook.keyboard.NativeKeyEvent;
@@ -14,6 +15,9 @@ public class MousecapKeyListener implements NativeKeyListener{
 	private int output = EXECUTE_GESTURES;
 	
 	public static final int EXECUTE_GESTURES = -1;
+	public static final int ADD_NEW_GESTURES = -2;
+	
+	private static MousecapKeyListener instance = new MousecapKeyListener();
 	
 	@Override
 	public void nativeKeyPressed(NativeKeyEvent keyEvent) {
@@ -44,18 +48,31 @@ public class MousecapKeyListener implements NativeKeyListener{
 
 	private void ship(Vector<Point> points) {
 		MousecapData data = MousecapData.getInstance();
-		Vector<Gesture> gestures = data.getGestures();
+		Collection<Gesture> gestures = data.getGestures();
 		if(output == EXECUTE_GESTURES) {
-			for(int i=0;i<gestures.size();i++) {
-				if(gestures.get(i) == null) continue;
-				if(Utilities.compareGestures(points, gestures.get(i).getPoints())) {
-					gestures.get(i).executeScript();
+			for(Gesture gesture : gestures) {
+				if(gesture == null) continue;
+				if(Utilities.compareGestures(points, gesture.getPoints())) {
+					gesture.executeScript();
 					break;
 				}
 			}
 		}
-		else if(output < data.getSize()) {
-			gestures.get(output).setPoints(points);
+		else if(output == ADD_NEW_GESTURES) {
+			Gesture gesture = new Gesture();
+			gesture.setPoints(points);
+			data.add(gesture);
+		}
+		else {
+		Gesture gesture = data.find(output);
+			if( gesture !=null) {
+				gesture.setPoints(points);
+			}
+			else {
+				gesture = new Gesture();
+				gesture.setPoints(points);
+				data.set(output,gesture);
+			}
 		}
 		
 	}
@@ -64,12 +81,14 @@ public class MousecapKeyListener implements NativeKeyListener{
 
 	@Override
 	public void nativeKeyTyped(NativeKeyEvent arg0) {
-		// TODO Auto-generated method stub
 		
 	}
 	
 	public void setOutput(int output) {
 		this.output = output;
+	}
+	public static MousecapKeyListener getInstance() {
+		return instance;
 	}
 	
 

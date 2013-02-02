@@ -12,6 +12,7 @@ public class Gesture implements Serializable {
 	private static final long serialVersionUID = 1L;
 	private Vector<Point> points = new Vector<Point>();
 	private String script = new String();
+	private Integer id;
 	
 	public Gesture() {
 		
@@ -35,7 +36,7 @@ public class Gesture implements Serializable {
 		this.script = script;
 	}
 	
-	public void executeScript() {
+	public void executeScript() {System.out.println("Running the script for "+id);
 		if(!script.equals("")) {
 			try {
 				Process p = Runtime.getRuntime().exec(script);
@@ -53,6 +54,12 @@ public class Gesture implements Serializable {
 				e.printStackTrace();
 			}
 		}
+	}
+	public Integer getId() {
+		return id;
+	}
+	public void setId(Integer id) {
+		this.id = id;
 	}
 
 }
