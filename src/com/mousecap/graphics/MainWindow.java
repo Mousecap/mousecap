@@ -1,5 +1,4 @@
 package com.mousecap.graphics;
-import com.mousecap.gesture.*;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -7,13 +6,11 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.Vector;
 
+import com.mousecap.Gesture;
 import com.trolltech.qt.core.QSignalMapper;
-import com.trolltech.qt.core.Qt;
 import com.trolltech.qt.gui.QAction;
 import com.trolltech.qt.gui.QApplication;
-import com.trolltech.qt.gui.QHBoxLayout;
 import com.trolltech.qt.gui.QKeySequence;
-import com.trolltech.qt.gui.QLabel;
 import com.trolltech.qt.gui.QMainWindow;
 import com.trolltech.qt.gui.QMenu;
 import com.trolltech.qt.gui.QTextEdit;
