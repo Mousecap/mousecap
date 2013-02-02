@@ -1,30 +1,30 @@
 import java.awt.Color;
-import java.awt.MouseInfo;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.Graphics;
 import java.awt.Point;
-import java.awt.Rectangle;
-import java.awt.Toolkit;
-import java.awt.event.KeyEvent;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.Vector;
 
+import javax.swing.JComboBox;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JList;
+import javax.swing.JPanel;
+import javax.swing.ListCellRenderer;
+
 import org.jnativehook.GlobalScreen;
-import org.jnativehook.NativeHookException;
-import org.jnativehook.keyboard.NativeKeyEvent;
-import org.jnativehook.keyboard.NativeKeyListener;
 
-import com.mousecap.algorithm.Utilities;
-import com.mousecap.graphics.Window;
+import com.mousecap.Gesture;
+import com.mousecap.MousecapData;
+import com.mousecap.MousecapKeyListener;
 
 
-public class Test implements NativeKeyListener{
+public class Test {
 	
-	private Boolean shift_down=false;
-	private Boolean ctrl_down=false;
-	private Boolean running = false;
-	private Vector<Point> temp = new Vector<Point>();
-	private Vector<Point> original = null;
-	//private static Window window = new Window();
 	public static void main(String[] args) {
-		try {
+		/*try {
 			GlobalScreen.registerNativeHook();
 		} catch (NativeHookException ex) {
 			System.err
@@ -33,82 +33,129 @@ public class Test implements NativeKeyListener{
 			ex.printStackTrace();
 
 			System.exit(1);
-		}
-
-		GlobalScreen.getInstance().addNativeKeyListener(new Test());
+		}*/
 		
-	}
-
-	@Override
-	public void nativeKeyPressed(NativeKeyEvent keyEvent) {
-		if(running) return;
-		if(keyEvent.getKeyCode() == NativeKeyEvent.VK_SHIFT) shift_down = true;
-		if(keyEvent.getKeyCode() == NativeKeyEvent.VK_CONTROL) ctrl_down = true;
-		if(ctrl_down && shift_down)
-			record();
-	}
-
-	private synchronized void record() {
-		new Thread(new Runnable(){
-			public void run(){
-				Window window = new Window();
-				window.setLocation(0,0);
-				Rectangle screenRect = new Rectangle(Toolkit.getDefaultToolkit().getScreenSize());
-				window.setSize(screenRect.getSize());
-				
-				
-				window.setBackground(new Color(255,255,255,64));
-				window.setVisible(true);
-				
-				while(ctrl_down && shift_down){
-					Point cur = MouseInfo.getPointerInfo().getLocation();
-					if(temp.isEmpty()) {
-						temp.add(cur);
-						window.newPoint(cur);
-						continue;
-					}
-					Point last = temp.lastElement();
-					
-					if(Math.abs(last.x-cur.x) + Math.abs(last.y-cur.y) < 10) continue;
-					window.newPoint(cur);
-					temp.add(cur);
-				}
-				window.setVisible(false);
-				getData(temp);
-				temp=new Vector<Point>();
-				running = false;
+		GlobalScreen.getInstance().addNativeKeyListener(MousecapKeyListener.getInstance());
+		
+		final JFrame frame = new JFrame();
+		frame.setSize(new Dimension(800,550));
+		final JComboBox<Gesture> box1 = new JComboBox<Gesture>(new Vector<Gesture>(MousecapData.getInstance().getGestures()));
+		
+		box1.setRenderer(new ListCellRenderer<Gesture>() {
+			@Override
+			public Component getListCellRendererComponent(
+					JList<? extends Gesture> list, Gesture value, int index,
+					boolean isSelected, boolean cellHasFocus) {
+				// TODO Auto-generated method stub
+				return new JLabel(value==null? "" : value.getId().toString());
 			}
-		}).start();
-		
-	}
+			
+		});
+		box1.addActionListener(new ActionListener(){
 
-	@Override
-	public void nativeKeyReleased(NativeKeyEvent keyEvent) {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				frame.repaint();
+				
+			}
+			
+		});
+		JPanel pic1 = new JPanel(){
+			public void paint(Graphics g){
+				g.setColor(Color.black);
+				Gesture gesture = (Gesture) box1.getSelectedItem();
+				
+				Vector<Point> points = gesture.getPoints();
+				int maxX=points.get(0).x,minX=points.get(0).x;
+				int maxY=points.get(0).y,minY=points.get(0).y;
+				for(Point point : points) {
+					if(point.x > maxX)
+						maxX=point.x;
+					if(point.x < minX)
+						minX=point.x;
+					if(point.y > maxY)
+						maxY=point.y;
+					if(point.y < minY)
+						minY=point.y;
+					
+				}
+				double vscale = 320.0/(maxY-minY);
+				double hscale = 320.0/(maxX-minX);
+				Point prev = points.firstElement();
+				for(Point p : points) {
+					g.drawLine(40+(int)((prev.x-minX)*hscale), 40+(int)((prev.y-minY)*vscale), 40+(int)((p.x-minX)*hscale), 40+(int)((p.y-minY)*vscale));
+					prev=p;
+				}
+				
+			}
+		};
 		
-		if(keyEvent.getKeyCode() == KeyEvent.VK_SHIFT) synchronized (shift_down) {
-			shift_down=false;
-		}	
-		if(keyEvent.getKeyCode() == KeyEvent.VK_CONTROL) synchronized (ctrl_down) {
-			ctrl_down=false;
-		}
+		pic1.setSize(new Dimension(400,400));
 		
-	}
+		box1.setSize(new Dimension(50,20));
+		frame.add(box1);
+		frame.add(pic1);
+		
+		
+final JComboBox<Gesture> box2 = new JComboBox<Gesture>(new Vector<Gesture>(MousecapData.getInstance().getGestures()));
+		
+		box2.setRenderer(new ListCellRenderer<Gesture>() {
+			@Override
+			public Component getListCellRendererComponent(
+					JList<? extends Gesture> list, Gesture value, int index,
+					boolean isSelected, boolean cellHasFocus) {
+				// TODO Auto-generated method stub
+				return new JLabel(value==null? "" : value.getId().toString());
+			}
+			
+		});
+		box2.addActionListener(new ActionListener(){
 
-	@Override
-	public void nativeKeyTyped(NativeKeyEvent arg0) {
-		// TODO Auto-generated method stub
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				frame.repaint();
+				
+			}
+			
+		});
+		JPanel pic2 = new JPanel(){
+			public void paint(Graphics g){
+				g.setColor(Color.black);
+				Gesture gesture = (Gesture) box2.getSelectedItem();
+				
+				Vector<Point> points = gesture.getPoints();
+				int maxX=points.get(0).x,minX=points.get(0).x;
+				int maxY=points.get(0).y,minY=points.get(0).y;
+				for(Point point : points) {
+					if(point.x > maxX)
+						maxX=point.x;
+					if(point.x < minX)
+						minX=point.x;
+					if(point.y > maxY)
+						maxY=point.y;
+					if(point.y < minY)
+						minY=point.y;
+					
+				}
+				double vscale = 320.0/(maxY-minY);
+				double hscale = 320.0/(maxX-minX);
+				Point prev = points.firstElement();
+				for(Point p : points) {
+					g.drawLine(40+(int)((prev.x-minX)*hscale), 40+(int)((prev.y-minY)*vscale), 40+(int)((p.x-minX)*hscale), 40+(int)((p.y-minY)*vscale));
+					prev=p;
+				}
+				
+			}
+		};
 		
-	}
-	
-	public void getData(Vector<Point> vect) {
-		if(original == null || original.size()==0) {
-			original = vect;
-			System.out.println(original);
-			return;
-		}
-		System.out.println(vect);
-		System.out.println(original);
-		Utilities.compareGestures(vect, original);
+		pic2.setSize(new Dimension(400,400));
+		
+		box2.setSize(new Dimension(20,10));
+		frame.add(box2);
+		frame.add(pic2);
+		
+		
+		frame.setVisible(true);
 	}
 
 }
