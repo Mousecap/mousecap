@@ -9,6 +9,7 @@ import com.mousecap.graphics.Window;
 public class Recorder {
 	static Vector<Point> vect;
 	static Boolean flag;
+	static int ignoreSize = 1;
 	public static synchronized void startRecording() {
 		
 		vect=new Vector<Point>();
@@ -26,7 +27,7 @@ public class Recorder {
 					}
 					Point last = vect.lastElement();
 					
-					if(Math.abs(last.x-cur.x) + Math.abs(last.y-cur.y) < 10) continue;
+					if(Math.abs(last.x-cur.x) + Math.abs(last.y-cur.y) < ignoreSize) continue;
 					window.newPoint(cur);
 					vect.add(cur);
 				}

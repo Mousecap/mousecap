@@ -11,8 +11,8 @@ import java.util.Vector;
 public class Gesture implements Serializable {
 	private static final long serialVersionUID = 1L;
 	private Vector<Point> points = new Vector<Point>();
-	private String script = new String("");
-	private String name = new String("");
+	private String script = new String();
+	private Integer id;
 	
 	public Gesture() {
 		
@@ -23,6 +23,7 @@ public class Gesture implements Serializable {
 	public Vector<Point> getPoints() {
 		return points;
 	}
+
 	public void setPoints(Vector<Point> points) {
 		this.points = points;
 	}
@@ -35,7 +36,7 @@ public class Gesture implements Serializable {
 		this.script = script;
 	}
 	
-	public void executeScript() {
+	public void executeScript() {System.out.println("Running the script for "+id);
 		if(!script.equals("")) {
 			try {
 				Process p = Runtime.getRuntime().exec(script);
@@ -54,11 +55,11 @@ public class Gesture implements Serializable {
 			}
 		}
 	}
-	public String getName() {
-		return name;
+	public Integer getId() {
+		return id;
 	}
-	public void setName(String name) {
-		this.name = name;
+	public void setId(Integer id) {
+		this.id = id;
 	}
 
 }
