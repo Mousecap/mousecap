@@ -13,10 +13,8 @@ import com.trolltech.qt.gui.QAction;
 import com.trolltech.qt.gui.QApplication;
 import com.trolltech.qt.gui.QHBoxLayout;
 import com.trolltech.qt.gui.QKeySequence;
-import com.trolltech.qt.gui.QLabel;
 import com.trolltech.qt.gui.QMainWindow;
 import com.trolltech.qt.gui.QMenu;
-import com.trolltech.qt.gui.QPixmap;
 import com.trolltech.qt.gui.QTextEdit;
 import com.trolltech.qt.gui.QWidget;
 
@@ -30,40 +28,81 @@ public class MainWindow extends QMainWindow {
 	private Vector<QAction> bindings = new Vector<QAction>();
 	private QSignalMapper mapper = new QSignalMapper();
 	private QWidget mainWidget;
-	private QTextEdit txt;
+	private QTextEdit txt = new QTextEdit();
+	private QTextEdit script = new QTextEdit();
+	private QHBoxLayout layout = new QHBoxLayout(mainWidget);
+	private Lines lineGraphic;
+	private int currentContext = -1;
+	
 	
 	public MainWindow() {
-		resize(500, 300);
 		mainWidget = new QWidget();
-		QHBoxLayout layout = new QHBoxLayout(mainWidget);
-		txt = new QTextEdit();
-		txt.setFixedSize(200, 50);
-		//QTextEdit txt2 = new QTextEdit();
+		/*
 		Vector<Point> tmppts = new Vector<Point>();
-		tmppts.add(new Point(10,10));
-		tmppts.add(new Point(200,200));
+		tmppts.add(new Point(-10,-10));
+		tmppts.add(new Point(500,500));
 		Lines l = new Lines(tmppts);
-		//QLabel pic = new QLabel();
-		//QPixmap pm = new QPixmap(300,300);
-		//pm.rect().
-		//pic.setPixmap(pm);
-		layout.addWidget(txt);
-		layout.addWidget(l);
-		mainWidget.setLayout(layout);
-		this.setCentralWidget(mainWidget);
-		//mainWidget.show();
-		//QApplication.
-		//QHBoxLayout layout = new QHBoxLayout(this);
-		//layout.addWidget(txt2);
-		//layout.addWidget(txt);
-		//txt.show();
-		//txt2.show();
-		//resize(350, 300);
-		//this.show();
+		*/
+		initContext(-1);
 		createActions();
 		createMenus();
 		mapBindings();
 		mapper.mappedInteger.connect(this, "editBind(int)");
+	}
+	public void initContext(int index) {
+		if(index < 0) {
+			resize(500, 300);
+			txt.setFixedSize(250, 50);
+			script.setFixedSize(250, 50);
+			layout.addWidget(txt);
+			layout.addWidget(script);
+			drawGraphic(null);
+			mainWidget.setLayout(layout);
+			this.setCentralWidget(mainWidget);
+		}
+		else {
+			layout.removeWidget(txt);
+			layout.removeWidget(lineGraphic);
+			layout.removeWidget(script);
+			txt = new QTextEdit();
+			txt.setFixedSize(250, 50);
+			script = new QTextEdit();
+			script.setFixedSize(250, 50);
+			layout.addWidget(txt);
+			layout.addWidget(script);
+			//txt.textChanged.connect(this, "textUpdate()");
+			if(gestures.size() > index && index >= 0 && gestures.get(index) != null) {
+				System.out.println(gestures.get(index));
+				txt.setText(gestures.get(index).getName());
+				script.setText(gestures.get(index).getScript());
+				drawGraphic(gestures.get(index).getPoints());
+			}
+			else {
+				drawGraphic(null);
+			}
+			txt.textChanged.connect(this, "textUpdate()");
+			script.textChanged.connect(this, "scriptUpdate()");
+			mainWidget.setLayout(layout);
+			this.setCentralWidget(mainWidget);
+		}
+		currentContext = index;
+	}
+	public void textUpdate() {
+		if(currentContext >= 0 && currentContext < gestures.size()) {
+			gestures.get(currentContext).setName(txt.toPlainText());
+		}
+		
+	}
+	public void scriptUpdate() {
+		if(currentContext >= 0 && currentContext < gestures.size()) {
+			gestures.get(currentContext).setScript(txt.toPlainText());
+		}
+		
+	}
+	public void drawGraphic(Vector<Point> pts) {
+		lineGraphic = new Lines(pts);
+		lineGraphic.setFixedSize(200,200);
+		layout.addWidget(lineGraphic);
 	}
 	@SuppressWarnings("unchecked")
 	private void mapBindings() {
@@ -103,15 +142,16 @@ public class MainWindow extends QMainWindow {
 		bindings.get(index).triggered.connect(mapper, "map()");//.connect(this, "editBind()");
 		mapper.setMapping(bindings.get(index), index);
 		bindsMenu.addAction(bindings.get(bindings.size() - 1));
-		gestures.add(null);
+		gestures.add(new Gesture());
 	}
 	private void newBinding(Gesture gesture) {
 		newBinding();
 		gestures.set(gestures.size()-1, gesture);//gestures.add(gesture);
 	}
 	@SuppressWarnings("unused")
-	private void editBind(int bind) {
-		System.out.println(bind);
+	private void editBind(int index) {
+		System.out.println(index);
+		initContext(index);
 		
 		//gestures.set(bind, new Gesture("echo \"hello, world!\""));
 		//gestures.get(bind).executeScript();
