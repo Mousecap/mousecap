@@ -39,7 +39,7 @@ public class Recorder {
 		flag=false;
 	}
 	
-	public Vector<Point> getPoints() {
+	public static Vector<Point> getPoints() {
 		return vect;
 	}
 }

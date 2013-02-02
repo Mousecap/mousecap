@@ -54,4 +54,5 @@ public class Gesture implements Serializable {
 			}
 		}
 	}
+
 }
