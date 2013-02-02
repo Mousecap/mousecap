@@ -1,4 +1,5 @@
 package com.mousecap.graphics;
+import java.awt.Point;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -10,10 +11,14 @@ import com.mousecap.Gesture;
 import com.trolltech.qt.core.QSignalMapper;
 import com.trolltech.qt.gui.QAction;
 import com.trolltech.qt.gui.QApplication;
+import com.trolltech.qt.gui.QHBoxLayout;
 import com.trolltech.qt.gui.QKeySequence;
+import com.trolltech.qt.gui.QLabel;
 import com.trolltech.qt.gui.QMainWindow;
 import com.trolltech.qt.gui.QMenu;
+import com.trolltech.qt.gui.QPixmap;
 import com.trolltech.qt.gui.QTextEdit;
+import com.trolltech.qt.gui.QWidget;
 
 public class MainWindow extends QMainWindow {
 	
@@ -24,21 +29,37 @@ public class MainWindow extends QMainWindow {
 	private Vector<Gesture> gestures = new Vector<Gesture>();
 	private Vector<QAction> bindings = new Vector<QAction>();
 	private QSignalMapper mapper = new QSignalMapper();
+	private QWidget mainWidget;
 	private QTextEdit txt;
 	
 	public MainWindow() {
-		/*txt = new QTextEdit();
-		txt.setFixedSize(200, 40);
-		QTextEdit txt2 = new QTextEdit();
-		QHBoxLayout layout = new QHBoxLayout();
-		layout.addWidget(txt2);
+		resize(500, 300);
+		mainWidget = new QWidget();
+		QHBoxLayout layout = new QHBoxLayout(mainWidget);
+		txt = new QTextEdit();
+		txt.setFixedSize(200, 50);
+		//QTextEdit txt2 = new QTextEdit();
+		Vector<Point> tmppts = new Vector<Point>();
+		tmppts.add(new Point(10,10));
+		tmppts.add(new Point(200,200));
+		Lines l = new Lines(tmppts);
+		//QLabel pic = new QLabel();
+		//QPixmap pm = new QPixmap(300,300);
+		//pm.rect().
+		//pic.setPixmap(pm);
 		layout.addWidget(txt);
-		txt.show();
-		txt2.show();
-		setLayout(layout);
-		resize(350, 300);
-		*/
-		this.show();
+		layout.addWidget(l);
+		mainWidget.setLayout(layout);
+		this.setCentralWidget(mainWidget);
+		//mainWidget.show();
+		//QApplication.
+		//QHBoxLayout layout = new QHBoxLayout(this);
+		//layout.addWidget(txt2);
+		//layout.addWidget(txt);
+		//txt.show();
+		//txt2.show();
+		//resize(350, 300);
+		//this.show();
 		createActions();
 		createMenus();
 		mapBindings();
@@ -125,6 +146,9 @@ public class MainWindow extends QMainWindow {
 		QApplication app = new QApplication("Mouse Cap", args);
 		
 		MainWindow m = new MainWindow();
+		//QHBoxLayout layout = new QHBoxLayout();
+		//m.setLayout(layout);
+		m.show();
 		//m.setFixedSize(325,50);
 		app.exec();
 	}
