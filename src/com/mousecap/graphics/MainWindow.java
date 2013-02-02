@@ -5,16 +5,23 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.util.Collection;
 import java.util.Vector;
 
 import com.mousecap.Gesture;
+import com.mousecap.MousecapData;
 import com.trolltech.qt.core.QSignalMapper;
 import com.trolltech.qt.gui.QAction;
 import com.trolltech.qt.gui.QApplication;
+import com.trolltech.qt.gui.QGridLayout;
 import com.trolltech.qt.gui.QHBoxLayout;
 import com.trolltech.qt.gui.QKeySequence;
+import com.trolltech.qt.gui.QListView;
+import com.trolltech.qt.gui.QListWidget;
+import com.trolltech.qt.gui.QListWidgetItem;
 import com.trolltech.qt.gui.QMainWindow;
 import com.trolltech.qt.gui.QMenu;
+import com.trolltech.qt.gui.QPushButton;
 import com.trolltech.qt.gui.QTextEdit;
 import com.trolltech.qt.gui.QWidget;
 
@@ -24,16 +31,18 @@ public class MainWindow extends QMainWindow {
 	private QMenu bindsMenu;
 	private QAction quitAct;
 	private QAction newAct;
-	private Vector<Gesture> gestures = new Vector<Gesture>();
-	private Vector<QAction> bindings = new Vector<QAction>();
+	//private Vector<QAction> bindings = new Vector<QAction>();
+	private QListWidget list = new QListWidget();
+	private QPushButton newGesture = new QPushButton("New Gesture");
 	private QSignalMapper mapper = new QSignalMapper();
 	private QWidget mainWidget;
 	private QTextEdit txt = new QTextEdit();
 	private QTextEdit script = new QTextEdit();
-	private QHBoxLayout layout = new QHBoxLayout(mainWidget);
+	private QGridLayout layout = new QGridLayout(mainWidget);
 	private Lines lineGraphic;
 	private int currentContext = -1;
 	
+	static MousecapData data = MousecapData.getInstance();
 	
 	public MainWindow() {
 		mainWidget = new QWidget();
@@ -43,6 +52,9 @@ public class MainWindow extends QMainWindow {
 		tmppts.add(new Point(500,500));
 		Lines l = new Lines(tmppts);
 		*/
+		layout.addWidget(newGesture);
+		list.setFixedSize(250, 250);
+		layout.addWidget(list);
 		initContext(-1);
 		createActions();
 		createMenus();
@@ -52,8 +64,8 @@ public class MainWindow extends QMainWindow {
 	public void initContext(int index) {
 		if(index < 0) {
 			resize(500, 300);
-			txt.setFixedSize(250, 50);
-			script.setFixedSize(250, 50);
+			txt.setFixedSize(250, 36);
+			script.setFixedSize(250, 36);
 			layout.addWidget(txt);
 			layout.addWidget(script);
 			drawGraphic(null);
@@ -71,11 +83,13 @@ public class MainWindow extends QMainWindow {
 			layout.addWidget(txt);
 			layout.addWidget(script);
 			//txt.textChanged.connect(this, "textUpdate()");
-			if(gestures.size() > index && index >= 0 && gestures.get(index) != null) {
-				System.out.println(gestures.get(index));
-				txt.setText(gestures.get(index).getName());
-				script.setText(gestures.get(index).getScript());
-				drawGraphic(gestures.get(index).getPoints());
+			if(data.getGestures().size() > index 
+				&& index >= 0 && data.find(index) != null) {
+				
+				System.out.println(data.find(index));
+				txt.setText(data.find(index).getName());
+				script.setText(data.find(index).getScript());
+				drawGraphic(data.find(index).getPoints());
 			}
 			else {
 				drawGraphic(null);
@@ -88,14 +102,14 @@ public class MainWindow extends QMainWindow {
 		currentContext = index;
 	}
 	public void textUpdate() {
-		if(currentContext >= 0 && currentContext < gestures.size()) {
-			gestures.get(currentContext).setName(txt.toPlainText());
+		if(currentContext >= 0 && currentContext < data.getGestures().size()) {
+			MousecapData.getInstance().find(currentContext).setName(txt.toPlainText());
 		}
 		
 	}
 	public void scriptUpdate() {
-		if(currentContext >= 0 && currentContext < gestures.size()) {
-			gestures.get(currentContext).setScript(txt.toPlainText());
+		if(currentContext >= 0 && currentContext < data.getGestures().size()) {
+			data.find(currentContext).setScript(txt.toPlainText());
 		}
 		
 	}
@@ -106,20 +120,9 @@ public class MainWindow extends QMainWindow {
 	}
 	@SuppressWarnings("unchecked")
 	private void mapBindings() {
-		try {
-			FileInputStream fis = new FileInputStream("gestures.ser");
-			ObjectInputStream in = new ObjectInputStream(fis);
-			Vector<Gesture> loadedGestures = (Vector<Gesture>)in.readObject();
-			in.close();
-			fis.close();
-			for(Gesture i : loadedGestures) {
-				newBinding(i);
-			}
-		} catch(IOException e) {
-			System.out.println("bindings not found.");
-			gestures = new Vector<Gesture>();
-		} catch (ClassNotFoundException e) {
-			e.printStackTrace();
+
+		for(Gesture i : data.getGestures()) {
+			newBinding(i);
 		}
 	}
 	private void createActions() {
@@ -128,26 +131,31 @@ public class MainWindow extends QMainWindow {
 		quitAct.setStatusTip("Quits the program.");
 		quitAct.triggered.connect(this, "exit()");
 		
-		newAct = new QAction(tr("&New Binding"), this);
+		/*newAct = new QAction(tr("&New Binding"), this);
 		newAct.setShortcuts(QKeySequence.StandardKey.New);
 		newAct.setStatusTip("Define a new binding.");
-		newAct.triggered.connect(this, "newBinding()");
+		newAct.triggered.connect(this, "newBinding()");*/
 	}
-	private void newBinding() {
+	private void newBinding(Gesture gesture) {
+		list.addItem(new QListWidgetItem(gesture.getName()));
+		//list.clicked.connect(receiver, method);
 		
-		bindings.add(new QAction("Bind &" + bindings.size(), this));
+	}
+	/*
+	private void newBinding(Gesture gesture) {
+		if(gesture != null)
+			bindings.add(new QAction("Bind &" + data.find(bindings.size()).getName(), this));
+		else
+			bindings.add(new QAction("Bind &" + bindings.size() , this));
 		int index = bindings.size()-1;
 		System.out.println("Created bind"+index);
 		bindings.get(index).setStatusTip("Edit Bind" + (bindings.size()-1));
 		bindings.get(index).triggered.connect(mapper, "map()");//.connect(this, "editBind()");
 		mapper.setMapping(bindings.get(index), index);
 		bindsMenu.addAction(bindings.get(bindings.size() - 1));
-		gestures.add(new Gesture());
-	}
-	private void newBinding(Gesture gesture) {
-		newBinding();
-		gestures.set(gestures.size()-1, gesture);//gestures.add(gesture);
-	}
+		if(gesture == null)
+			data.add(new Gesture());
+	}*/
 	@SuppressWarnings("unused")
 	private void editBind(int index) {
 		System.out.println(index);
@@ -159,7 +167,7 @@ public class MainWindow extends QMainWindow {
 	}
 	@SuppressWarnings({ "static-access", "unused" })
 	private void exit() {
-		System.out.println("exiting normally.");
+		/*System.out.println("exiting normally.");
 		FileOutputStream fs;
 		try {
 			fs = new FileOutputStream("gestures.ser");
@@ -170,7 +178,7 @@ public class MainWindow extends QMainWindow {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		
+		*/
 		QApplication.instance().exit(0);
 	}
 	private void createMenus() {
@@ -184,12 +192,8 @@ public class MainWindow extends QMainWindow {
 	@SuppressWarnings("static-access")
 	public static void main(String[] args) {
 		QApplication app = new QApplication("Mouse Cap", args);
-		
 		MainWindow m = new MainWindow();
-		//QHBoxLayout layout = new QHBoxLayout();
-		//m.setLayout(layout);
 		m.show();
-		//m.setFixedSize(325,50);
 		app.exec();
 	}
 	

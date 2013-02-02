@@ -19,7 +19,7 @@ public class Gesture implements Serializable {
 		
 	}
 	public Gesture(String cmd) {
-		this.script = cmd;
+		this.name = cmd;
 	}
 	public Vector<Point> getPoints() {
 		return points;
@@ -63,6 +63,9 @@ public class Gesture implements Serializable {
 		this.id = id;
 	}
 	public String getName() {
+		return name;
+	}
+	public String toString() {
 		return name;
 	}
 	public void setName(String name) {
