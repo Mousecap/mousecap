@@ -2,15 +2,11 @@
 <classpath>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.7"/>
-	<classpathentry kind="lib" path="/home/olaf/Downloads/JNativeHook/jar/JNativeHook.jar">
-		<attributes>
-			<attribute name="javadoc_location" value="file:/home/olaf/Downloads/JNativeHook/doc/"/>
-		</attributes>
-	</classpathentry>
-	<classpathentry kind="lib" path="/home/olaf/Downloads/qtjambi-linux64-community-4.6.3/qtjambi-4.6.3.jar"/>
-	<classpathentry kind="lib" path="/home/olaf/Downloads/qtjambi-linux64-community-4.6.3/qtjambi-util-4.6.3.jar"/>
-	<classpathentry kind="lib" path="/home/olaf/Downloads/qtjambi-linux64-community-4.6.3/qtjambi-linux64-gcc-4.6.3.jar"/>
-	<classpathentry kind="lib" path="/home/olaf/Downloads/qtjambi-linux64-community-4.6.3/qtjambi-examples-4.6.3.jar"/>
-	<classpathentry kind="lib" path="/home/olaf/Downloads/qtjambi-linux64-community-4.6.3/qtjambi-designer-4.6.3.jar"/>
+	<classpathentry kind="lib" path="lib/JNativeHook.jar"/>
+	<classpathentry kind="lib" path="lib/qtjambi-4.6.3.jar"/>
+	<classpathentry kind="lib" path="lib/qtjambi-designer-4.6.3.jar"/>
+	<classpathentry kind="lib" path="lib/qtjambi-examples-4.6.3.jar"/>
+	<classpathentry kind="lib" path="lib/qtjambi-linux64-gcc-4.6.3.jar"/>
+	<classpathentry kind="lib" path="lib/qtjambi-util-4.6.3.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
