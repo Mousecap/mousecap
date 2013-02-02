@@ -5,7 +5,7 @@ import java.util.Vector;
 
 public class Utilities {
 	public static final double ERROR_MARGIN = Math.PI/4;
-	public static final int JUMP_POINTS = 2;
+	public static final int JUMP_POINTS = 30;
 	public static final int IGNORE_ENDPOINTS = 3;
 	
 	public static double getDirection(Point point1, Point point2) {
@@ -29,7 +29,6 @@ public class Utilities {
 	
 	public static boolean compareGestures(Vector<Point> vect1, Vector<Point> vect2) {
 		double direction = getDirection(vect1,0,JUMP_POINTS);
-		System.out.println(direction);
 		
 		int i=0,j=0;
 		while(i+JUMP_POINTS<vect1.size() && j+JUMP_POINTS<vect2.size()) {
@@ -45,6 +44,10 @@ public class Utilities {
 			while(i+JUMP_POINTS<vect1.size() && compareDirections(direction, getDirection(vect1, i,JUMP_POINTS)))
 				i++;
 			while(j+JUMP_POINTS<vect2.size() && compareDirections(direction, getDirection(vect2, j,JUMP_POINTS)))
+				j++;
+			while(i+JUMP_POINTS<vect1.size() && Math.abs(vect1.get(i).x-vect1.get(i+JUMP_POINTS).x)+Math.abs(vect1.get(i).y-vect1.get(i+JUMP_POINTS).y) <= (JUMP_POINTS+1)*4/5)
+				i++;
+			while(j+JUMP_POINTS<vect2.size() && Math.abs(vect2.get(j).x-vect2.get(j+JUMP_POINTS).x)+Math.abs(vect1.get(j).y-vect2.get(j+JUMP_POINTS).y) <= (JUMP_POINTS+1)*4/5)
 				j++;
 			
 		}
