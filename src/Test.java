@@ -22,7 +22,7 @@ public class Test implements NativeKeyListener{
 	private Boolean running = false;
 	private Vector<Point> temp = new Vector<Point>();
 	private Vector<Point> original = null;
-	private static Window window = new Window();
+	//private static Window window = new Window();
 	public static void main(String[] args) {
 		try {
 			GlobalScreen.registerNativeHook();
@@ -42,8 +42,8 @@ public class Test implements NativeKeyListener{
 	@Override
 	public void nativeKeyPressed(NativeKeyEvent keyEvent) {
 		if(running) return;
-		if(keyEvent.getKeyCode() == KeyEvent.VK_SHIFT) shift_down = true;
-		if(keyEvent.getKeyCode() == keyEvent.VK_CONTROL) ctrl_down = true;
+		if(keyEvent.getKeyCode() == NativeKeyEvent.VK_SHIFT) shift_down = true;
+		if(keyEvent.getKeyCode() == NativeKeyEvent.VK_CONTROL) ctrl_down = true;
 		if(ctrl_down && shift_down)
 			record();
 	}
