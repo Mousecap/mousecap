@@ -66,7 +66,7 @@ public class Gesture implements Serializable {
 		return name;
 	}
 	public String toString() {
-		return name;
+		return name + " : " + script;
 	}
 	public void setName(String name) {
 		this.name = name;

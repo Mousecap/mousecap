@@ -4,16 +4,19 @@ import java.awt.Point;
 import java.util.Collection;
 import java.util.Vector;
 
+import javax.swing.JFrame;
+
 import org.jnativehook.keyboard.NativeKeyEvent;
 import org.jnativehook.keyboard.NativeKeyListener;
 
 import com.mousecap.algorithm.Utilities;
+import com.mousecap.graphics.SwingWindow;
 
 public class MousecapKeyListener implements NativeKeyListener{
 	private Boolean shift_down=false;
 	private Boolean ctrl_down=false;
 	private int output = EXECUTE_GESTURES;
-	
+	private SwingWindow.Notificator notificator = null;
 	public static final int EXECUTE_GESTURES = -1;
 	public static final int ADD_NEW_GESTURES = -2;
 	
@@ -59,9 +62,11 @@ public class MousecapKeyListener implements NativeKeyListener{
 			}
 		}
 		else if(output == ADD_NEW_GESTURES) {
-			Gesture gesture = new Gesture();
+			Gesture gesture = new Gesture("New Gesture");
 			gesture.setPoints(points);
 			data.add(gesture);
+			if(notificator != null)
+				notificator.update();
 		}
 		else {
 		Gesture gesture = data.find(output);
@@ -72,7 +77,10 @@ public class MousecapKeyListener implements NativeKeyListener{
 				gesture = new Gesture();
 				gesture.setPoints(points);
 				data.set(output,gesture);
+				
 			}
+			if(notificator != null)
+				notificator.update();
 		}
 		
 	}
@@ -89,6 +97,16 @@ public class MousecapKeyListener implements NativeKeyListener{
 	}
 	public static MousecapKeyListener getInstance() {
 		return instance;
+	}
+
+	public SwingWindow.Notificator getNotificator() {
+		return notificator;
+	}
+
+
+
+	public void setNotificator(SwingWindow.Notificator notificator) {
+		this.notificator = notificator;
 	}
 	
 
