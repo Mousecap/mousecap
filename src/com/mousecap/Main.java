@@ -31,7 +31,7 @@ public class Main {
 			}
 		}
 		System.out.println("aha!");
-		//MousecapData.getInstance().saveGestures();
+		MousecapData.getInstance().saveGestures();
 		MousecapKeyListener.getInstance().setOutput(MousecapKeyListener.EXECUTE_GESTURES);
 		
 		
