@@ -66,6 +66,7 @@ public class Utilities {
 		return true;*/
 	}
 	public static Vector<Point> getDirSeq(Vector<Point> points) {
+		if(points == null || points.size() < 2) return new Vector<Point>();
 		Vector<Point> dirSeq = new Vector<Point>();
 		int beginning = 0,ending=0;
 		Point begP = (Point) points.get(0).clone();
@@ -174,7 +175,6 @@ public class Utilities {
 				double beg = Math.max(dl1/l1,dl2/l2);
 				double end = Math.min((dl1+length(p1))/l1, (dl2+length(p2))/l2);
 				double comL = end>beg ? end-beg : 0;
-				System.out.println(comL);
 				result += dot(p1,p2)/length(p1)/length(p2)*comL;
 				dl2+=length(p2);
 			}
