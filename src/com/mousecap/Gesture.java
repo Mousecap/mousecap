@@ -18,8 +18,8 @@ public class Gesture implements Serializable {
 	public Gesture() {
 		
 	}
-	public Gesture(String cmd) {
-		this.name = cmd;
+	public Gesture(String name) {
+		this.name = name;
 	}
 	public Vector<Point> getPoints() {
 		return points;
@@ -38,7 +38,7 @@ public class Gesture implements Serializable {
 	}
 	
 	public void executeScript() {System.out.println("Running the script for "+id);
-		if(!script.equals("")) {
+		if(script != null && !script.equals("")) {
 			try {
 				Process p = Runtime.getRuntime().exec(script);
 				BufferedReader cin  = new BufferedReader(new InputStreamReader(p.getInputStream()));
