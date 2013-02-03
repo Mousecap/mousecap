@@ -9,6 +9,7 @@ import java.util.Vector;
 import javax.swing.JComponent;
 
 import com.mousecap.Gesture;
+import com.mousecap.algorithm.Utilities;
 
 
 public class GestureGraphPane extends JComponent {
@@ -21,7 +22,12 @@ public class GestureGraphPane extends JComponent {
 		g.setColor(Color.black);
 		if(gesture == null) return;
 		
-		Vector<Point> points = gesture.getPoints();
+		Vector<Point> dirSeq = Utilities.getDirSeq(gesture.getPoints());
+		Vector<Point> points = new Vector<Point>();
+		points.add(new Point(0,0));
+		for(Point p : dirSeq) {
+			points.add(new Point(points.lastElement().x+p.x,points.lastElement().y+p.y));
+		}
 		if(points == null || points.size() < 1) return;
 		int maxX=points.get(0).x,minX=points.get(0).x;
 		int maxY=points.get(0).y,minY=points.get(0).y;

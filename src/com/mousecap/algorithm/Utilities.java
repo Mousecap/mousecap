@@ -35,7 +35,10 @@ public class Utilities {
 	}
 	
 	public static boolean compareGestures(Vector<Point> vect1, Vector<Point> vect2) {
-		if(vect1.size()<JUMP_POINTS || vect2.size()<JUMP_POINTS) 
+		Vector<Point> dirSeq1 = getDirSeq(vect1);
+		Vector<Point> dirSeq2 = getDirSeq(vect2);
+		return rateDirSeq(dirSeq1, dirSeq2) >0.65;
+		/*if(vect1.size()<JUMP_POINTS || vect2.size()<JUMP_POINTS) 
 			return false;
 		double direction = getDirection(vect1,0,JUMP_POINTS);
 		
@@ -60,7 +63,7 @@ public class Utilities {
 			return false;
 		}
 		
-		return true;
+		return true;*/
 	}
 	public static Vector<Point> getDirSeq(Vector<Point> points) {
 		Vector<Point> dirSeq = new Vector<Point>();
@@ -164,11 +167,14 @@ public class Utilities {
 		for(Point p1 : dirSeq1) {
 			double dl2=0;
 			for(Point p2 : dirSeq2) {
-				//if(dot(p1,p2)<0)
-					//continue;
+				if(dot(p1,p2)<0){
+					dl2+=length(p2);
+					continue;
+				}
 				double beg = Math.max(dl1/l1,dl2/l2);
 				double end = Math.min((dl1+length(p1))/l1, (dl2+length(p2))/l2);
 				double comL = end>beg ? end-beg : 0;
+				System.out.println(comL);
 				result += dot(p1,p2)/length(p1)/length(p2)*comL;
 				dl2+=length(p2);
 			}
